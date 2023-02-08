@@ -54,7 +54,6 @@ services:
 
 volumes:
   mariadb:
-    name: mariadb_volume
     driver: local
     driver_opts:
       type: 'none'
@@ -62,11 +61,10 @@ volumes:
       device: /home/vboxuser/data/mariadb
 
   wordpress:
-    name: wordpress_volume
     driver: local
     driver_opts:
-      type: none
-      o: bind # bind mount the volume
+      type: 'none'
+      o: 'bind' # bind mount the volume
       device: /home/vboxuser/data/wordpress
 
 networks:
