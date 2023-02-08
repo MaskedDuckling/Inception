@@ -1,19 +1,20 @@
-all:	bind_mount
-	@sudo docker-compose -f ./srcs/docker-compose.yml up -d --build
+PATH_YML = ./srcs/docker-compose.yml
 
-clean:
-	@sudo docker-compose -f ./srcs/docker-compose.yml down
+all:
+	@mkdir -p /home/vboxuser/data
+	@mkdir -p /home/vboxuser/data/wordpress
+	@mkdir -p /home/vboxuser/data/mariadb
+	@sudo docker-compose -f $(PATH_YML) up -d --build
+
+re: clean all
+
+stop:
+	@sudo docker-compose -f $(PATH_YML) stop
+
+clean: stop
+	@sudo docker-compose -f $(PATH_YML) down -v
 
 fclean: clean
-	@sudo rm -rf /home/$(USER)/data/wordpress
-	@sudo rm -rf /home/$(USER)/data/mariadb
-	@sudo docker system prune -a --volumes
-
-re: fclean all
-
-bind_mount:
-	@mkdir -p /home/$(USER)/data
-	@mkdir -p /home/$(USER)/data/mariadb
-	@mkdir -p /home/$(USER)/data/wordpress
-
-.PHONY: all fclean clean bind_mount
+	@sudo rm -rf /home/vboxuser/data/wordpress
+	@sudo rm -rf /home/vboxuser/data/mariadb
+	@sudo docker system prune -af
