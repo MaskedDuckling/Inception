@@ -1,14 +1,14 @@
-version: '3.7'
+version: '3'
 
 services:
 
   nginx:
-    build: nginx
-    image: nginx:mine
     container_name: nginx
-    init: true
-    environment:
-      - DOMAIN_NAME
+    build: 
+      context: nginx
+      dockerfile: Dockerfile
+    env_file:
+      - .env
     depends_on:
       - wordpress
     networks:
@@ -16,37 +16,32 @@ services:
     ports:
       - "443:443"
     volumes:
-      - wordpress:/var/www/html
-    restart: always
+      - wordpress:/var/www/wordpress
+    restart: on-failure   
 
   mariadb:
-    build: mariadb
-    image: mariadb:mine
     container_name: mariadb
-    init: true
-    environment:
-      - MYSQL_ROOT_PASSWORD
-      - MYSQL_USER
-      - MYSQL_PASSWORD
-      - MYSQL_WP_NAME
+    build:
+      context: mariadb
+      dockerfile: Dockerfile
+    env_file:
+      - .env
     networks:
       - inception
     expose:
       - "3306"
     volumes:
       - mariadb:/var/lib/mysql
-    restart: always
+    restart: unless-stopped  
 
 
   wordpress:
-    build: wordpress
-    image: wordpress:mine
     container_name: wordpress
-    init: true
-    environment:
-      - MYSQL_USER
-      - MYSQL_PASSWORD
-      - MYSQL_WP_NAME
+    build: 
+      context: wordpress
+      dockerfile: Dockerfile
+    env_file:
+      - .env
     depends_on:
       - mariadb
     networks:
@@ -54,23 +49,17 @@ services:
     expose:
       - "9000"
     volumes:
-      - wordpress:/var/www/html
-    restart: always
-
-networks:
-
-  inception:
-    driver: bridge
+      - wordpress:/var/www/wordpress
+    restart: on-failure
 
 volumes:
-
   mariadb:
     name: mariadb_volume
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: /home/$USER/data/mariadb
+      device: /home/vboxuser/data/mariadb
 
   wordpress:
     name: wordpress_volume
@@ -78,4 +67,8 @@ volumes:
     driver_opts:
       type: none
       o: bind # bind mount the volume
-      device: /home/$USER/data/wordpress
+      device: /home/vboxuser/data/wordpress
+
+networks:
+  inception:
+    driver: bridge
