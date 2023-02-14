@@ -1,21 +1,9 @@
 [mysql]
 default-character-set=utf8
 
-#Indique la configuration
-
 [mysqld]
-user = mysql
-
-#Ou mettre la base de donnee (DB)
-
 datadir = /var/lib/mysql
-
-#Toute les Ip du reseau peuvent se connecter
-
-bind_address=*
-
-#Port de communication (Avec wordpress)
-
-port = 3306
-
 socket  = /run/mysqld/mysqld.sock
+bind_address=*
+port = 3306
+user = mysql
